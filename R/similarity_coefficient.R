@@ -5,11 +5,12 @@
 #' @param description
 #' @return description
 #' @export
-similarity_coefficient <- function(similarity_mtx, threshold = NULL, echo = TRUE) {
+similarity_coefficient <- function(similarity_mtx, x_axis = TRUE, threshold = NULL, echo = TRUE) {
 
   if (!is.null(threshold) & !is.numeric(threshold)) {
     stop('`threshold` needs to be NULL or numeric!')
   }
+  margin <- if (x_axis) 1 else 2
 
   check_obj <- function(x) if (!is.null(dim(x)) & typeof(x) == 'double') TRUE else FALSE
 
@@ -18,7 +19,7 @@ similarity_coefficient <- function(similarity_mtx, threshold = NULL, echo = TRUE
     # choose maximum similarity from matrix
     coefficients <- apply(
       X = .similarity_mtx,
-      MARGIN = 1,
+      MARGIN = margin,
       FUN = function(row) {
         similarities <- na.omit(row)
         max_similarity <- if (length(similarities) < 1) NA else max(row, na.rm = TRUE)
