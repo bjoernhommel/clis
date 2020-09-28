@@ -41,20 +41,22 @@ similarity_matrix <- function(clis_vec_x, clis_vec_y, method = 'lv', echo = TRUE
   std_distance_mtx <- 1 - (distance_mtx / length_mtx)
 
   divergent_similarity_mtx <- std_distance_mtx
+  convergent_similarity_mtx <- std_distance_mtx
 
-  construct_x <- dplyr::select(clis_vec_x, starts_with('construct')) %>%
-    unlist(use.names = FALSE)
-  construct_y <- dplyr::select(clis_vec_y, starts_with('construct')) %>%
-    unlist(use.names = FALSE)
+  construct_x <- dplyr::select(clis_vec_x, starts_with('construct'))
+  construct_y <- dplyr::select(clis_vec_y, starts_with('construct'))
 
-  convergence_mtx <- outer(construct_x, construct_y, "==")
+  convergence_mtx <- Map(
+    f = function(x, y) outer(x, y, FUN = '=='),
+    construct_x[seq_len(ncol(construct_x))],
+    construct_y[seq_len(ncol(construct_y))]
+  ) %>%
+    simplify2array() %>%
+    apply(1:2, function(x) {
+      if (all(is.na(x))) NA else max(x, na.rm = TRUE)
+    })
 
-  convergent_similarity_vec <- std_distance_mtx
-  convergent_similarity_vec[!convergence_mtx] <- NA
-  convergent_similarity_mtx <- matrix(
-    data = convergent_similarity_vec,
-    nrow = nrow(std_distance_mtx)
-  )
+  convergent_similarity_mtx[!convergence_mtx] <- NA
 
   export <- list(
     'convergent' = convergent_similarity_mtx,
