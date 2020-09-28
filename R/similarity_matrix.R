@@ -20,12 +20,15 @@ similarity_matrix <- function(clis_vec_x, clis_vec_y, method = 'lv', echo = TRUE
   stems_y <- dplyr::select(clis_vec_y, starts_with('stem'))[, 1] %>%
     unlist(use.names = FALSE)
 
+  if (echo) cat('Calculating distance-matrix...\n')
+
   distance_mtx <- stringdist::stringdistmatrix(
     a = stems_x,
     b = stems_y,
     method = method
   )
 
+  if (echo) cat('Calculating length-matrix...\n')
   length_mtx <- matrix(
     data = apply(
       X = expand.grid(
@@ -46,6 +49,7 @@ similarity_matrix <- function(clis_vec_x, clis_vec_y, method = 'lv', echo = TRUE
   construct_x <- dplyr::select(clis_vec_x, starts_with('construct'))
   construct_y <- dplyr::select(clis_vec_y, starts_with('construct'))
 
+  if (echo) cat('Calculating convergence-matrix...\n')
   convergence_mtx <- Map(
     f = function(x, y) outer(x, y, FUN = '=='),
     construct_x[seq_len(ncol(construct_x))],

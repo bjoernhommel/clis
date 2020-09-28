@@ -18,6 +18,7 @@ similarity_coefficient <- function(similarity_mtx, x_axis = TRUE, threshold = NU
   if (check_obj(similarity_mtx)) {
 
     # find maximum similarity from matrix
+    if (echo) cat('Calculating similarity coefficients...\n')
     export <- apply(
       X = similarity_mtx,
       MARGIN = margin,
