@@ -40,42 +40,25 @@ similarity_matrix <- function(clis_vec_x, clis_vec_y, method = 'lv', echo = TRUE
 
   std_distance_mtx <- 1 - (distance_mtx / length_mtx)
 
-  divergent <- std_distance_mtx
-  convergent  <- list()
+  divergent_similarity_mtx <- std_distance_mtx
 
-  construct_x <- dplyr::select(clis_vec_x, starts_with('construct'))
-  construct_y <- dplyr::select(clis_vec_y, starts_with('construct'))
+  construct_x <- dplyr::select(clis_vec_x, starts_with('construct')) %>%
+    unlist(use.names = FALSE)
+  construct_y <- dplyr::select(clis_vec_y, starts_with('construct')) %>%
+    unlist(use.names = FALSE)
 
-  for (x in seq_along(construct_x)) {
+  convergence_mtx <- outer(construct_x, construct_y, "==")
 
-    vec_x <- unlist(construct_x[, x], use.names = FALSE)
-
-    for (y in seq_along(construct_y)) {
-
-      vec_y <- unlist(construct_y[, y], use.names = FALSE)
-
-      convergence_mtx <- matrix(
-        data = apply(
-          X = expand.grid(
-            'x' = vec_x,
-            'y' = vec_y
-          ),
-          MARGIN = 1,
-          FUN = function(df) {
-            identical(df[['x']], df[['y']])
-          }
-        ),
-        nrow = nrow(distance_mtx)
-      )
-      key <- paste0(x, ':', y)
-      convergent[[key]] <- std_distance_mtx
-      convergent[[key]][!convergence_mtx] <- NA
-    }
-  }
+  convergent_similarity_vec <- std_distance_mtx
+  convergent_similarity_vec[!convergence_mtx] <- NA
+  convergent_similarity_mtx <- matrix(
+    data = convergent_similarity_vec,
+    nrow = nrow(std_distance_mtx)
+  )
 
   export <- list(
-    'divergent' = divergent,
-    'convergent' = convergent
+    'convergent' = convergent_similarity_mtx,
+    'divergent' = divergent_similarity_mtx
   )
 
   return(export)
