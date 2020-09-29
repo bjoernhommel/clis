@@ -29,16 +29,11 @@ similarity_matrix <- function(clis_vec_x, clis_vec_y, method = 'lv', echo = TRUE
   )
 
   if (echo) cat('Calculating length-matrix...\n')
-  length_mtx <- matrix(
-    data = apply(
-      X = expand.grid(
-        sapply(stems_x, nchar, USE.NAMES = FALSE),
-        sapply(stems_y, nchar, USE.NAMES = FALSE)
-      ),
-      MARGIN = 1,
-      FUN = max
-    ),
-    nrow = nrow(distance_mtx)
+
+  length_mtx <- outer(
+    X = nchar(stems_x),
+    Y = nchar(stems_y),
+    FUN = 'pmax'
   )
 
   std_distance_mtx <- 1 - (distance_mtx / length_mtx)
@@ -50,6 +45,7 @@ similarity_matrix <- function(clis_vec_x, clis_vec_y, method = 'lv', echo = TRUE
   construct_y <- dplyr::select(clis_vec_y, starts_with('construct'))
 
   if (echo) cat('Calculating convergence-matrix...\n')
+
   convergence_mtx <- Map(
     f = function(x, y) outer(x, y, FUN = '=='),
     construct_x[seq_len(ncol(construct_x))],
