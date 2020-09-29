@@ -17,6 +17,7 @@ parse <- function(string, start_flag = '<|startoftext|>', stop_flag = '<|endofte
     ) %>%
     lapply(stringr::str_replace_all, pattern = start_flag, replacement = '') %>%
     lapply(stringr::str_replace_all, pattern = stop_flag, replacement = '') %>%
+    lapply(clis::clean) %>%
     lapply(FUN = function(x) {
 
       x <- stringr::str_split(string = x, pattern = stem_delim, simplify = TRUE)
