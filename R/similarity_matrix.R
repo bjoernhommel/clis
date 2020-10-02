@@ -46,15 +46,22 @@ similarity_matrix <- function(clis_vec_x, clis_vec_y, method = 'lv', echo = TRUE
 
   if (echo) cat('Calculating convergence-matrix...\n')
 
-  convergence_mtx <- Map(
-    f = function(x, y) outer(x, y, FUN = '=='),
-    construct_x[seq_len(ncol(construct_x))],
-    construct_y[seq_len(ncol(construct_y))]
-  ) %>%
-    simplify2array() %>%
-    apply(1:2, function(x) {
-      if (all(is.na(x))) NA else max(x, na.rm = TRUE)
-    })
+  # convergence_mtx <- Map(
+  #   f = function(x, y) outer(x, y, FUN = '=='),
+  #   construct_x[seq_len(ncol(construct_x))],
+  #   construct_y[seq_len(ncol(construct_y))]
+  # ) %>%
+  #   simplify2array() %>%
+  #   apply(1:2, function(x) {
+  #     if (all(is.na(x))) NA else max(x, na.rm = TRUE)
+  #   })
+
+  convergence_mtx <- outer(
+    X = asplit(df1, 1),
+    Y = asplit(df2, 1),
+    FUN = Vectorize(
+      FUN = function(x, y) ifelse(all(is.na(u <- x==y)), NA, max(u,na.rm = TRUE)))
+    )
 
   convergent_similarity_mtx[!convergence_mtx] <- NA
 
