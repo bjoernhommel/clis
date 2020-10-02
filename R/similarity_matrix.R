@@ -57,8 +57,8 @@ similarity_matrix <- function(clis_vec_x, clis_vec_y, method = 'lv', echo = TRUE
   #   })
 
   convergence_mtx <- outer(
-    X = asplit(df1, 1),
-    Y = asplit(df2, 1),
+    X = asplit(construct_x, 1),
+    Y = asplit(construct_y, 1),
     FUN = Vectorize(
       FUN = function(x, y) ifelse(all(is.na(u <- x==y)), NA, max(u,na.rm = TRUE)))
     )
