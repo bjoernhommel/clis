@@ -56,12 +56,17 @@ similarity_matrix <- function(clis_vec_x, clis_vec_y, method = 'lv', echo = TRUE
   #     if (all(is.na(x))) NA else max(x, na.rm = TRUE)
   #   })
 
-  convergence_mtx <- outer(
-    X = asplit(construct_x, 1),
-    Y = asplit(construct_y, 1),
-    FUN = Vectorize(
-      FUN = function(x, y) ifelse(all(is.na(u <- x==y)), NA, max(u,na.rm = TRUE)))
-    )
+  # convergence_mtx <- outer(
+  #   X = asplit(construct_x, 1),
+  #   Y = asplit(construct_y, 1),
+  #   FUN = Vectorize(
+  #     FUN = function(x, y) ifelse(all(is.na(u <- x==y)), NA, max(u,na.rm = TRUE)))
+  #   )
+
+  convergence_mtx <- Reduce(
+    function(...) pmax(..., na.rm = TRUE),
+    Map(function(x, y) outer(x, y, `==`), construct_x, construct_y)
+  )
 
   convergent_similarity_mtx[!convergence_mtx] <- NA
 
