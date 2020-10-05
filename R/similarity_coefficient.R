@@ -30,7 +30,7 @@ similarity_coefficient <- function(similarity_mtx, x_axis = TRUE, threshold = NU
 
     # coerce into dichotomous similarity score if threshold is defined
     if (!is.null(threshold)) {
-      export <- dplyr::if_else(coefficients >= threshold, 1, 0)
+      export <- dplyr::if_else(export >= threshold, 1, 0)
     }
 
   } else {
