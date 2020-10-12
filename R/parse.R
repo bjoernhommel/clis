@@ -24,23 +24,24 @@ parse <- function(string, start_flag = '<|startoftext|>', stop_flag = '<|endofte
 
       if (ncol(x) > 1) {
 
-        stems <- x[, 2:ncol(x)]
+        stems <- matrix(x[, 2:ncol(x)], nrow = nrow(x))
 
         constructs <- stringr::str_split(
           string = x[, 1],
           pattern = construct_delim,
           simplify = TRUE
         ) %>%
-          .[, 2:ncol(.)]
+          .[, 2:ncol(.)] %>%
+          matrix(nrow = nrow(x))
 
         clis <- data.frame(
-          constructs = matrix(constructs, nrow = nrow(x)),
-          stems = matrix(stems, nrow = nrow(x)),
+          constructs = constructs,
+          stems = stems,
           stringsAsFactors = FALSE
         )
 
-        n_constructs <- if (is.null(dim(constructs))) 1 else ncol(constructs)
-        n_stems <- if (is.null(dim(stems))) 1 else ncol(stems)
+        n_constructs <- if (ncol(constructs) < 2) 1 else ncol(constructs)
+        n_stems <- if (ncol(stems) < 2) 1 else ncol(stems)
 
         clis_colnames <- c(
           paste0('construct', '_', 1:n_constructs),
