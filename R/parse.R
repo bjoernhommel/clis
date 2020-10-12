@@ -33,24 +33,28 @@ parse <- function(string, start_flag = '<|startoftext|>', stop_flag = '<|endofte
         ) %>%
           .[, 2:ncol(.)]
 
-        clis <- data.frame(
-          constructs = constructs,
-          stems = stems,
-          stringsAsFactors = FALSE
-        )
+        tryCatch({
+          clis <- data.frame(
+            constructs = as.matrix(constructs),
+            stems = as.matrix(stems),
+            stringsAsFactors = FALSE
+          )
 
-        n_constructs <- if (is.null(dim(constructs))) 1 else ncol(constructs)
-        n_stems <- if (is.null(dim(stems))) 1 else ncol(stems)
+          n_constructs <- if (is.null(dim(constructs))) 1 else ncol(constructs)
+          n_stems <- if (is.null(dim(stems))) 1 else ncol(stems)
 
-        clis_colnames <- c(
-          paste0('construct', '_', 1:n_constructs),
-          paste0('stem', '_', 1:n_stems)
-        )
+          clis_colnames <- c(
+            paste0('construct', '_', 1:n_constructs),
+            paste0('stem', '_', 1:n_stems)
+          )
 
-        clis <- magrittr::set_colnames(clis, clis_colnames)
+          clis <- magrittr::set_colnames(clis, clis_colnames)
 
-        return(clis)
+          return(clis)
 
+        }, error = function(e) {
+          return(NULL)
+        })
       } else {
         return(NULL)
       }
