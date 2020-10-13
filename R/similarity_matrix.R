@@ -63,6 +63,26 @@ similarity_matrix <- function(clis_vec_x, clis_vec_y, method = 'lv', echo = TRUE
   #     FUN = function(x, y) ifelse(all(is.na(u <- x==y)), NA, max(u,na.rm = TRUE)))
   #   )
 
+  extend_columns <- function(obj, add_columns) {
+
+    start_ncol <- ncol(obj) + 1
+    target_ncol <- ncol(obj) + add_columns
+
+    export <- obj %>% tibble::add_column(
+      !!!setNames(
+        object = as.list(rep(NA, add_columns)),
+        nm = paste0('construct_', start_ncol:target_ncol)
+      )
+    )
+    return(export)
+  }
+  if (ncol(construct_x) > ncol(construct_y)) {
+    construct_y <- extend_columns(construct_y, ncol(construct_x) - ncol(construct_y))
+  } else if (ncol(construct_x) < ncol(construct_y)) {
+    construct_x <- extend_columns(construct_x, ncol(construct_y) - ncol(construct_x))
+  }
+
+
   convergence_mtx <- Reduce(
     function(...) pmax(..., na.rm = TRUE),
     Map(function(x, y) outer(x, y, `==`), construct_x, construct_y)
